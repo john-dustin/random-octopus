@@ -16,6 +16,13 @@ import { PhotoStrip } from '@/components/person/PhotoStrip';
 
 type Props = { params: Promise<{ id: string }> };
 
+export const revalidate = 3600;
+
+// No catalog to enumerate — render each person on first request, then serve from cache.
+export function generateStaticParams() {
+  return [];
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const p = await getPerson(id).catch(() => null);

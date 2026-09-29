@@ -49,6 +49,19 @@ For CI, connect the repo in Cloudflare Workers Builds — it builds and deploys 
 Keep the `name` in `wrangler.jsonc` (and the `WORKER_SELF_REFERENCE` service) equal to
 the Worker name, or the deploy fails with a service-binding error.
 
+Caching: rendered pages are ISR (`revalidate` on `/`, `/title/[id]`, `/name/[id]`,
+`/charts/[chart]`) and stored in R2 via `incrementalCache`, with a Durable Object queue
+for time-based revalidation. **Create the bucket once before deploying** (or change
+`bucket_name` in `wrangler.jsonc`):
+
+```bash
+npx wrangler r2 bucket create random-octopus-cache
+```
+
+The `DOQueueHandler` Durable Object is created by the `migrations` entry on first deploy.
+This is what keeps dynamic routes off the CPU hot path — without it, every hit re-renders
+and the free plan's 10 ms CPU cap kills requests.
+
 Vercel and Netlify also work out of the box (Next.js preset auto-detected, no build
 settings). On any host, optionally set `PREPARE_URL` / `RESOLVE_URL` to override the
 built-in Railway defaults. `/api/prepare` and `/api/resolve` declare `maxDuration = 60`

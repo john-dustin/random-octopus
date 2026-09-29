@@ -8,7 +8,7 @@ import { Rail } from '@/components/Rail';
 import { Container, SectionHeader } from '@/components/ui';
 import { RouletteTeaser } from '@/components/home/RouletteTeaser';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 900;
 
 export default async function Home() {
   const [home, top250] = await Promise.all([getHome(), getChart('TOP_RATED_MOVIES', 250)]);

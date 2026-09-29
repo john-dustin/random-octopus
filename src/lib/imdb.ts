@@ -55,7 +55,7 @@ export async function gql<T = Json>(query: string, variables: Record<string, unk
     let lastErr: unknown;
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        const r = await fetch(GQL_URL, { method: 'POST', headers: HEADERS, body, cache: 'no-store' });
+        const r = await fetch(GQL_URL, { method: 'POST', headers: HEADERS, body });
         if (!r.ok) throw new Error(`IMDb responded ${r.status}`);
         const j = await r.json();
         if (j.errors?.length && !j.data) throw new Error(j.errors[0].message);

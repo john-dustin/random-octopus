@@ -11,6 +11,12 @@ import { ChartList } from '@/components/charts/ChartList';
 
 const isSlug = (s: string): s is ChartSlug => s in CHARTS;
 
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return Object.keys(CHARTS).map((chart) => ({ chart }));
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ chart: string }> }): Promise<Metadata> {
   const { chart } = await params;
   if (!isSlug(chart)) return { title: 'Charts' };

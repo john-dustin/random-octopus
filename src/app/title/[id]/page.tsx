@@ -20,6 +20,15 @@ import { CastRail, Crew, Facts, Heading, Keywords, Quotes, Scores, WhereToWatch 
 
 type Props = { params: Promise<{ id: string }> };
 
+// Cache rendered pages so repeat traffic doesn't re-hit IMDb; trailer URLs are
+// signed and the data cache holds them 30 min, so revalidate on the same order.
+export const revalidate = 1800;
+
+// No catalog to enumerate — render each title on first request, then serve from cache.
+export function generateStaticParams() {
+  return [];
+}
+
 async function load(id: string) {
   if (!/^tt\d{5,10}$/.test(id)) return null;
   return getTitle(id);
