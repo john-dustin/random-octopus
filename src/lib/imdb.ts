@@ -49,20 +49,30 @@ function remember<T>(key: string, load: () => Promise<T>): Promise<T> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Json = any;
 
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
 export async function gql<T = Json>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
   const body = JSON.stringify({ query, variables });
   return remember(body, async () => {
     let lastErr: unknown;
-    for (let attempt = 0; attempt < 3; attempt++) {
+    // IMDb throttles shared/datacenter IPs with bursts of 429s, so back off
+    // exponentially (honouring Retry-After) instead of giving up after ~1.5s.
+    for (let attempt = 0; attempt < 5; attempt++) {
+      let waitMs = 250 * (attempt + 1) + Math.random() * 250;
       try {
         const r = await fetch(GQL_URL, { method: 'POST', headers: HEADERS, body });
+        if (r.status === 429 || r.status === 503) {
+          const retryAfter = Number(r.headers.get('retry-after'));
+          waitMs = Math.min(Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 500 * 2 ** attempt, 10_000);
+          throw new Error(`IMDb responded ${r.status}`);
+        }
         if (!r.ok) throw new Error(`IMDb responded ${r.status}`);
         const j = await r.json();
         if (j.errors?.length && !j.data) throw new Error(j.errors[0].message);
         return j.data as T;
       } catch (e) {
         lastErr = e;
-        await new Promise((res) => setTimeout(res, 250 * (attempt + 1)));
+        if (attempt < 4) await sleep(waitMs);
       }
     }
     throw lastErr;
