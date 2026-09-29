@@ -1,11 +1,11 @@
 import { defineCloudflareConfig } from '@opennextjs/cloudflare';
-import r2IncrementalCache from '@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache';
+import kvIncrementalCache from '@opennextjs/cloudflare/overrides/incremental-cache/kv-incremental-cache';
 import doQueue from '@opennextjs/cloudflare/overrides/queue/do-queue';
 
 const config = {
   ...defineCloudflareConfig({
-    // Store ISR/SSG output in R2 so rendered pages survive across isolates.
-    incrementalCache: r2IncrementalCache,
+    // Store ISR/SSG output in Workers KV so rendered pages survive across isolates.
+    incrementalCache: kvIncrementalCache,
     // Durable Object queue dedupes time-based revalidations.
     queue: doQueue,
   }),

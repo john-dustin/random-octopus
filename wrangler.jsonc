@@ -17,10 +17,9 @@
   "images": {
     "binding": "IMAGES"
   },
-  "r2_buckets": [
+  "kv_namespaces": [
     {
-      "binding": "NEXT_INC_CACHE_R2_BUCKET",
-      "bucket_name": "random-octopus-cache"
+      "binding": "NEXT_INC_CACHE_KV"
     }
   ],
   "durable_objects": {

@@ -50,21 +50,17 @@ Keep the `name` in `wrangler.jsonc` (and the `WORKER_SELF_REFERENCE` service) eq
 the Worker name, or the deploy fails with a service-binding error.
 
 Caching: rendered pages are ISR (`revalidate` on `/`, `/title/[id]`, `/name/[id]`,
-`/charts/[chart]`) and stored in R2 via `incrementalCache`, with a Durable Object queue
-for time-based revalidation. The GET IMDb proxy routes (`/api/title`, `/api/search`,
+`/charts/[chart]`) and stored in Workers KV via `incrementalCache`, with a Durable Object
+queue for time-based revalidation. The GET IMDb proxy routes (`/api/title`, `/api/search`,
 `/api/suggest`, `/api/cards`, `/api/grid`, `/api/season`) carry their own `revalidate`
 and are cached per-URL, so they skip IMDb entirely on a hit. The in-memory `remember()`
 map in `lib/imdb.ts` is only an L1 — per-isolate on Workers and short-lived.
 
-**Create the bucket once before deploying** (or change `bucket_name` in `wrangler.jsonc`):
-
-```bash
-npx wrangler r2 bucket create random-octopus-cache
-```
-
-The `DOQueueHandler` Durable Object is created by the `migrations` entry on first deploy.
-This is what keeps dynamic routes off the CPU hot path — without it, every hit re-renders
-and the free plan's 10 ms CPU cap kills requests.
+The KV namespace (`NEXT_INC_CACHE_KV`) is auto-provisioned by Wrangler on first deploy —
+no bucket to create and no payment method needed. The `DOQueueHandler` Durable Object is
+created by the `migrations` entry on first deploy. This is what keeps dynamic routes off
+the CPU hot path — without it, every hit re-renders and the free plan's 10 ms CPU cap
+kills requests.
 
 Vercel and Netlify also work out of the box (Next.js preset auto-detected, no build
 settings). On any host, optionally set `PREPARE_URL` / `RESOLVE_URL` to override the
