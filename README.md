@@ -32,18 +32,23 @@ Copy `.env.example` to `.env.local` and point these at your own instance. The se
 keeps handles in memory with a ~5 min TTL, so it should run as a single persistent
 process (e.g. Render free web service) rather than serverless instances.
 
-## Deploy (Vercel)
+## Deploy
 
-Import the repo on Vercel — the Next.js framework preset is detected automatically, no
-build settings required. Optionally set `PREPARE_URL` / `RESOLVE_URL` in the project's
-environment variables to override the built-in defaults; otherwise the deployed site
-talks to the hosted Railway service. `/api/prepare` and `/api/resolve` declare
-`maxDuration = 60` so a cold upstream can finish before the function is killed.
+Cloudflare Workers is wired up via OpenNext (`wrangler.jsonc`, `open-next.config.ts`):
 
 ```bash
-npx vercel          # preview deploy
-npx vercel --prod   # production
+npm run preview   # build + run in the Workers runtime locally
+npm run deploy    # build + deploy to Cloudflare
 ```
+
+For CI, connect the repo in Cloudflare Workers Builds — it builds and deploys on push.
+Keep the `name` in `wrangler.jsonc` (and the `WORKER_SELF_REFERENCE` service) equal to
+the Worker name, or the deploy fails with a service-binding error.
+
+Vercel and Netlify also work out of the box (Next.js preset auto-detected, no build
+settings). On any host, optionally set `PREPARE_URL` / `RESOLVE_URL` to override the
+built-in Railway defaults. `/api/prepare` and `/api/resolve` declare `maxDuration = 60`
+(honored by Vercel) so a cold upstream can finish before the function is killed.
 
 ## Map
 
