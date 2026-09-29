@@ -19,7 +19,8 @@
   },
   "kv_namespaces": [
     {
-      "binding": "NEXT_INC_CACHE_KV"
+      "binding": "NEXT_INC_CACHE_KV",
+      "id": "869c9e6112124dc2924eaedba34f6148"
     }
   ],
   "durable_objects": {
