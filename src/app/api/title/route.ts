@@ -1,5 +1,7 @@
 import { getTitle } from '@/lib/imdb';
 
+export const revalidate = 1800;
+
 // GET /api/title?id=tt… → full TitleDetail (used by Compare & Roulette on the client)
 export async function GET(req: Request) {
   const id = new URL(req.url).searchParams.get('id') ?? '';

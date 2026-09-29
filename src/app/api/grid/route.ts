@@ -1,5 +1,7 @@
 import { getEpisodeGrid } from '@/lib/imdb';
 
+export const revalidate = 3600;
+
 // GET /api/grid?id=tt…&seasons=1,2,3
 export async function GET(req: Request) {
   const p = new URL(req.url).searchParams;

@@ -51,8 +51,12 @@ the Worker name, or the deploy fails with a service-binding error.
 
 Caching: rendered pages are ISR (`revalidate` on `/`, `/title/[id]`, `/name/[id]`,
 `/charts/[chart]`) and stored in R2 via `incrementalCache`, with a Durable Object queue
-for time-based revalidation. **Create the bucket once before deploying** (or change
-`bucket_name` in `wrangler.jsonc`):
+for time-based revalidation. The GET IMDb proxy routes (`/api/title`, `/api/search`,
+`/api/suggest`, `/api/cards`, `/api/grid`, `/api/season`) carry their own `revalidate`
+and are cached per-URL, so they skip IMDb entirely on a hit. The in-memory `remember()`
+map in `lib/imdb.ts` is only an L1 — per-isolate on Workers and short-lived.
+
+**Create the bucket once before deploying** (or change `bucket_name` in `wrangler.jsonc`):
 
 ```bash
 npx wrangler r2 bucket create random-octopus-cache

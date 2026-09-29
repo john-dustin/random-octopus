@@ -1,5 +1,7 @@
 import { getSeason } from '@/lib/imdb';
 
+export const revalidate = 3600;
+
 // GET /api/season?id=tt…&s=1
 export async function GET(req: Request) {
   const p = new URL(req.url).searchParams;

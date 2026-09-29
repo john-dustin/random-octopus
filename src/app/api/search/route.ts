@@ -1,5 +1,7 @@
 import { searchAll } from '@/lib/imdb';
 
+export const revalidate = 300;
+
 // GET /api/search?q=…
 export async function GET(req: Request) {
   const q = (new URL(req.url).searchParams.get('q') ?? '').trim().slice(0, 100);
