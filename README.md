@@ -36,6 +36,10 @@ process (e.g. Render free web service) rather than serverless instances.
 
 Cloudflare Workers is wired up via OpenNext (`wrangler.jsonc`, `open-next.config.ts`):
 
+`npm run build` runs the OpenNext build (which calls `next build` internally, see
+`buildCommand` in `open-next.config.ts`), producing the `.open-next` bundle the deploy
+step needs.
+
 ```bash
 npm run preview   # build + run in the Workers runtime locally
 npm run deploy    # build + deploy to Cloudflare
