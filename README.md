@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lumière
 
-## Getting Started
+A cinematic movie & TV discovery site built on IMDb metadata — trailers, cast & crew,
+episode-rating heatmaps, career charts, box-office breakdowns, legal "where to watch"
+links, a movie roulette, head-to-head comparisons and a personal library.
 
-First, run the development server:
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+# or, for the fast production build:
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No API keys needed. All IMDb requests are made server-side (IMDb's GraphQL endpoint
+rejects browser origins), with an in-memory cache in `src/lib/imdb.ts`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Download service (optional)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The title page "Download" button talks to a small companion service that turns a title
+into quality options and resolves a direct link. It is proxied server-side by
+`/api/prepare` and `/api/resolve` (so the browser never hits it directly, avoiding CORS).
+Both proxy routes read their upstream from env vars, falling back to the hosted instance:
 
-## Learn More
+| Var | Default |
+| --- | --- |
+| `PREPARE_URL` | `https://effective-octupus-production.up.railway.app/prepare` |
+| `RESOLVE_URL` | `https://effective-octupus-production.up.railway.app/resolve` |
 
-To learn more about Next.js, take a look at the following resources:
+Copy `.env.example` to `.env.local` and point these at your own instance. The service
+keeps handles in memory with a ~5 min TTL, so it should run as a single persistent
+process (e.g. Render free web service) rather than serverless instances.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Import the repo on Vercel — the Next.js framework preset is detected automatically, no
+build settings required. Optionally set `PREPARE_URL` / `RESOLVE_URL` in the project's
+environment variables to override the built-in defaults; otherwise the deployed site
+talks to the hosted Railway service. `/api/prepare` and `/api/resolve` declare
+`maxDuration = 60` so a cold upstream can finish before the function is killed.
 
-## Deploy on Vercel
+```bash
+npx vercel          # preview deploy
+npx vercel --prod   # production
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Map
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Route | What it is |
+| --- | --- |
+| `/` | Hero carousel with ambient trailers, Top 10, series, premieres, film of the day, genres, decades |
+| `/title/[id]` | Film / series / episode page — scores, where to watch, box office, cast, trailers, gallery, trivia, quotes, reviews, episode heatmap |
+| `/name/[id]` | Person page — bio, stats, interactive career chart, filmography |
+| `/discover` | Filter the whole catalogue (genres, years, rating, votes, runtime, moods, keywords) |
+| `/charts/[chart]` | Top 250 movies/series, most popular, Hall of Shame |
+| `/roulette` | Spin a film reel to pick tonight's movie |
+| `/compare` | Versus — two titles head to head |
+| `/library` | Watchlist, diary, personal ratings & stats (stored in your browser) |
+| `/search` | Full search results |
+
+Press **⌘K** (or **/**) anywhere to search.
+
+## Stack
+
+Next.js 16 (App Router, Server Components) · React 19 · TypeScript · Tailwind CSS v4 ·
+Motion · TanStack Query · Zustand · Lucide.
+
+Data © IMDb — for personal, non-commercial use. Creek footage: [Pexels #6754975](https://www.pexels.com/video/6754975/)
+(Pexels License), trimmed into a seamless 12s loop and colour-graded; encodes live in `public/media/`.

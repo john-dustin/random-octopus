@@ -1,26 +1,300 @@
 @import "tailwindcss";
 
+/* ==================================================================
+   Lumière — iOS "Liquid Glass" design system, pine-forest edition
+
+   Built on Apple's dark-mode semantics (HIG): a black base, label
+   greys at 100/60/30% of #EBEBF5, the dark system accent palette, SF Pro
+   via the system font stack, 8pt spacing, 44pt targets. The pine forest
+   is a real photograph used the way iOS uses a wallpaper: everything
+   sits on translucent glass above it. `--accent` is re-tinted per title
+   from its poster (see <Ambient/>).
+   ================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds (systemBackground → quaternary) */
+  --bg: #000000;
+  --s1: #1c1c1e;
+  --s2: #2c2c2e;
+  --s3: #3a3a3c;
+  --s4: #48484a;
+  --night: #000000;
+
+  /* Separators */
+  --line: rgb(255 255 255 / 0.1);
+  --line-strong: rgb(255 255 255 / 0.18);
+
+  /* Labels */
+  --fg: #ffffff;
+  --fg-muted: #a1a1a8; /* ≈ secondaryLabel (#EBEBF5 @ 60%) on dark */
+  --fg-faint: #6e6e76; /* ≈ tertiaryLabel */
+
+  /* Dark-mode system colours. The old botanical names are kept as aliases
+     so every page picks up the iOS palette without churn. */
+  --pine: #4fd18b;      /* app tint — a spruce-leaning systemGreen */
+  --gold: #ffd60a;      /* systemYellow */
+  --leaf: var(--pine);
+  --moss: #63e6e2;      /* systemMint */
+  --lagoon: #40c8e0;    /* systemTeal */
+  --sky: #0a84ff;       /* systemBlue */
+  --poppy: #ff9f0a;     /* systemOrange */
+  --bloom: #ff375f;     /* systemPink */
+  --lavender: #bf5af2;  /* systemPurple */
+  --bark: #ac8e68;      /* systemBrown */
+  --gold-soft: rgb(255 214 10 / 0.14);
+  --accent: 79 209 139; /* rgb triplet of --pine; overwritten per title */
+  --danger: #ff453a;    /* systemRed */
+  --ok: #30d158;        /* systemGreen */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1); /* UIKit sheet curve */
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-bg: var(--bg);
+  --color-s1: var(--s1);
+  --color-s2: var(--s2);
+  --color-s3: var(--s3);
+  --color-s4: var(--s4);
+  --color-night: var(--night);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-faint: var(--fg-faint);
+  --color-pine: var(--pine);
+  --color-gold: var(--gold);
+  --color-leaf: var(--leaf);
+  --color-moss: var(--moss);
+  --color-lagoon: var(--lagoon);
+  --color-sky: var(--sky);
+  --color-poppy: var(--poppy);
+  --color-bloom: var(--bloom);
+  --color-lavender: var(--lavender);
+  --color-bark: var(--bark);
+  --color-accent: rgb(var(--accent));
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* SF Pro on Apple devices (the real thing), Inter everywhere else. */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', var(--font-inter), system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', var(--font-inter), system-ui, sans-serif;
+  /* iOS sets numbers in SF with tabular figures rather than a mono face. */
+  --font-mono: -apple-system, BlinkMacSystemFont, 'SF Pro Text', var(--font-inter), system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-cine: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --animate-kenburns: kenburns 24s var(--ease-cine) infinite alternate;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-fade-up: fade-up 0.7s var(--ease-out) both;
+  --animate-spin-slow: spin 18s linear infinite;
+  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+  --animate-sway: none;
+  --animate-drift: none;
+
+  @keyframes kenburns {
+    0% { transform: scale(1.04) translate3d(0, 0, 0); }
+    100% { transform: scale(1.14) translate3d(-2%, -1.5%, 0); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scrollbar-color: var(--s3) transparent;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* transparent so the fixed wallpaper (z -20) shows through */
+  background: transparent;
+  min-height: 100dvh;
+  overflow-x: clip;
+  letter-spacing: -0.011em; /* SF Text body tracking */
+}
+
+::selection {
+  background: rgb(10 132 255 / 0.45);
+  color: #fff;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--sky);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+}
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+@layer components {
+  /* Large titles — SF Pro Display Bold with Apple's tight display tracking */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.028em;
+    line-height: 1.02;
+  }
+  /* Emphasis inside titles is colour, never italics (iOS doesn't italicise titles). */
+  .display em {
+    font-style: normal;
+    color: var(--tone, var(--pine));
+  }
+
+  /* Section captions — iOS grouped-list header style */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  .font-mono { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+
+  /* Liquid Glass — for chrome (nav, tab bar, floating controls, overlays).
+     Blur + saturation lens the pines behind; a hairline rim and a specular
+     top edge give it thickness. Frost is kept high for legibility (HIG). */
+  .glass {
+    background: rgb(44 44 48 / 0.46);
+    backdrop-filter: blur(28px) saturate(185%);
+    border: 0.5px solid rgb(255 255 255 / 0.16);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.14),
+      inset 0 -1px 0 rgb(255 255 255 / 0.03),
+      0 10px 30px -10px rgb(0 0 0 / 0.55);
+  }
+
+  /* Thicker glass for chrome that floats over busy content (posters, stills) */
+  .glass-strong {
+    background: rgb(28 28 30 / 0.74);
+    backdrop-filter: blur(36px) saturate(190%);
+    border-color: rgb(255 255 255 / 0.14);
+  }
+
+  /* Grouped content surface — a frosted card (secondarySystemGroupedBackground) */
+  .panel {
+    background: rgb(28 28 30 / 0.66);
+    backdrop-filter: blur(34px) saturate(160%);
+    border: 0.5px solid rgb(255 255 255 / 0.1);
+    border-radius: 22px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, rgb(255 255 255 / 0.05) 0px, rgb(255 255 255 / 0.1) 120px, rgb(255 255 255 / 0.05) 240px);
+    background-size: 800px 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+
+  .fade-x {
+    mask-image: linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%);
+  }
+
+  .accent-glow {
+    box-shadow: 0 0 0 1px rgb(var(--accent) / 0.35), 0 10px 40px -8px rgb(var(--accent) / 0.45);
+  }
+
+  /* A soft specular sweep on hover (posters) */
+  .sheen { position: relative; overflow: hidden; }
+  .sheen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 0.12) 48%, transparent 60%);
+    transform: translateX(-120%);
+    transition: transform 0.9s var(--ease-out);
+    pointer-events: none;
+  }
+  .group:hover .sheen::after,
+  .sheen:hover::after { transform: translateX(120%); }
+
+  /* Legacy decorative utilities, retired to quiet hairlines */
+  .bulbs { background: rgb(255 255 255 / 0.12); }
+  .spectrum { background: var(--pine); }
+  .spectrum-text { color: var(--pine); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Controls                                                            */
+/* ------------------------------------------------------------------ */
+
+/* iOS slider: 4pt track, white 28pt knob with a soft shadow */
+input[type='range'] {
+  appearance: none;
+  background: transparent;
+  width: 100%;
+  height: 28px;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 4px;
+  background: rgb(120 120 128 / 0.36);
+}
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -9px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.35), 0 0 0 0.5px rgb(0 0 0 / 0.04);
+  cursor: grab;
+}
+input[type='range']::-moz-range-track { height: 4px; background: rgb(120 120 128 / 0.36); border-radius: 4px; }
+input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border: 0; border-radius: 999px; background: #fff; }
+
+/* Selects: the native arrow ignores padding and rounded corners (and in Safari it
+   hugs or overflows the capsule edge), so draw an iOS-style chevron inside instead.
+   Unlayered on purpose — it must win over utility padding and the .glass shorthand. */
+select {
+  color-scheme: dark;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23a1a1a8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 4.5 6 7.5 9 4.5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  background-size: 12px 12px;
+  padding-right: 2.25rem;
+  text-overflow: ellipsis;
+}
+select::-ms-expand { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
