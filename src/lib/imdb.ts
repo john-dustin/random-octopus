@@ -11,8 +11,10 @@ import type {
  * Personal, non-commercial use — see IMDb's data usage terms.
  */
 
-const GQL_URL = 'https://api.graphql.imdb.com/';
-const SUGGEST_URL = 'https://v3.sg.media-imdb.com/suggestion/x/';
+// Overridable so hosts whose egress IMDb throttles (e.g. Cloudflare Workers) can
+// route GraphQL through a forwarder on an unblocked IP.
+const GQL_URL = process.env.IMDB_GQL_URL ?? 'https://api.graphql.imdb.com/';
+const SUGGEST_URL = process.env.IMDB_SUGGEST_URL ?? 'https://v3.sg.media-imdb.com/suggestion/x/';
 const TTL = 1000 * 60 * 30; // trailer URLs are signed; don't hold them too long
 const MAX_ENTRIES = 1500;
 
